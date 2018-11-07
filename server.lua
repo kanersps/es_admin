@@ -147,7 +147,9 @@ AddEventHandler('es_admin:set', function(t, USER, GROUP)
 			if available then
 			if t == "group" then
 				if(GetPlayerName(USER) == nil)then
-					TriggerClientEvent('chatMessage', source, 'SYSTEM', {255, 0, 0}, "Player not found")
+					TriggerClientEvent('chat:addMessage', source, {
+						args = {"^1SYSTEM", "Player not found"}
+					})
 				else
 					TriggerEvent("es:getAllGroups", function(groups)
 						if(groups[GROUP])then
@@ -174,7 +176,9 @@ AddEventHandler('es_admin:set', function(t, USER, GROUP)
 					if(GROUP ~= nil and GROUP > -1)then
 						TriggerEvent("es:setPlayerData", USER, "permission_level", GROUP, function(response, success)
 							if(true)then
-								TriggerClientEvent('chatMessage', -1, "CONSOLE", {0, 0, 0}, "Permission level of ^2" .. GetPlayerName(tonumber(USER)) .. "^0 has been set to ^2 " .. tostring(GROUP))
+								TriggerClientEvent('chat:addMessage', -1, {
+									args = {"^1CONSOLE", "Permission level of ^2" .. GetPlayerName(tonumber(USER)) .. "^0 has been set to ^2 " .. tostring(GROUP)}
+								})
 							end
 						end)
 
@@ -359,13 +363,19 @@ end)
 
 -- Default commands
 TriggerEvent('es:addCommand', 'admin', function(source, args, user)
-	TriggerClientEvent('chatMessage', source, "SYSTEM", {255, 0, 0}, "Level: ^*^2 " .. tostring(user.get('permission_level')))
-	TriggerClientEvent('chatMessage', source, "SYSTEM", {255, 0, 0}, "Group: ^*^2 " .. user.getGroup())
+	TriggerClientEvent('chat:addMessage', source, {
+		args = {"^1SYSTEM", "Level: ^*^2 " .. tostring(user.get('permission_level'))}
+	})
+	TriggerClientEvent('chat:addMessage', source, {
+		args = {"^1SYSTEM", "Group: ^*^2 " .. user.getGroup()}
+	})
 end, {help = "Shows what admin level you are and what group you're in"})
 
 -- Report to admins
 TriggerEvent('es:addCommand', 'report', function(source, args, user)
-	TriggerClientEvent('chatMessage', source, "REPORT", {255, 0, 0}, " (^2" .. GetPlayerName(source) .." | "..source.."^0) " .. table.concat(args, " "))
+	TriggerClientEvent('chat:addMessage', source, {
+		args = {"^1REPORT", " (^2" .. GetPlayerName(source) .. " | " .. source .. "^0) " .. table.concat(args, " ")}
+	})
 
 	TriggerEvent("es:getPlayers", function(pl)
 		for k,v in pairs(pl) do
@@ -404,7 +414,9 @@ TriggerEvent('es:addGroupCommand', 'kick', "mod", function(source, args, user)
 					reason = "Kicked: " .. table.concat(reason, " ")
 				end
 
-				TriggerClientEvent('chatMessage', -1, "SYSTEM", {255, 0, 0}, "Player ^2" .. GetPlayerName(player) .. "^0 has been kicked(^2" .. reason .. "^0)")
+				TriggerClientEvent('chat:addMessage', -1, {
+					args = {"^1SYSTEM", "Player ^2" .. GetPlayerName(player) .. "^0 has been kicked(^2" .. reason .. "^0)"}
+				})
 				DropPlayer(player, reason)
 			end)
 		else
@@ -419,7 +431,9 @@ end, {help = "Kick a user with the specified reason or no reason", params = {{na
 
 -- Announcing
 TriggerEvent('es:addGroupCommand', 'announce', "admin", function(source, args, user)
-	TriggerClientEvent('chatMessage', -1, "ANNOUNCEMENT", {255, 0, 0}, "" .. table.concat(args, " "))
+	TriggerClientEvent('chat:addMessage', -1, {
+		args = {"^1ANNOUNCEMENT", table.concat(args, " ")}
+	})
 end, function(source, args, user)
 	TriggerClientEvent('chat:addMessage', source, { args = {"^1SYSTEM", "Insufficienct permissions!"} })
 end, {help = "Announce a message to the entire server", params = {{name = "announcement", help = "The message to announce"}}})
