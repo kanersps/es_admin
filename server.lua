@@ -52,7 +52,7 @@ end
 
 function banUser(id)
 	banned = banned .. id .. "\n"
-	SaveResourceFile(GetCurrentResourceName()", "data/bans.txt", banned, -1)
+	SaveResourceFile(GetCurrentResourceName(), "data/bans.txt", banned, -1)
 	bannedTable[id] = true
 end
 
