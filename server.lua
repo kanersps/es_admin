@@ -18,7 +18,7 @@ local banned = ""
 local bannedTable = {}
 
 function loadBans()
-	banned = LoadResourceFile("es_admin2", "data/bans.txt") or ""
+	banned = LoadResourceFile(GetCurrentResourceName(), "data/bans.txt") or ""
 	if banned then
 		local b = stringsplit(banned, "\n")
 		for k,v in ipairs(b) do
@@ -52,7 +52,7 @@ end
 
 function banUser(id)
 	banned = banned .. id .. "\n"
-	SaveResourceFile("es_admin2", "data/bans.txt", banned, -1)
+	SaveResourceFile(GetCurrentResourceName(), "data/bans.txt", banned, -1)
 	bannedTable[id] = true
 end
 
