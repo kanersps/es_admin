@@ -235,131 +235,130 @@ AddEventHandler('es_admin:set', function(t, USER, GROUP)
 	end)
 end)
 
--- Rcon commands
-AddEventHandler('rconCommand', function(commandName, args)
-	if commandName == 'setadmin' then
-		if #args ~= 2 then
-			RconPrint("Usage: setadmin [user-id] [permission-level]\n")
-			CancelEvent()
-			return
-		end
-
-		if(GetPlayerName(tonumber(args[1])) == nil)then
-			RconPrint("Player not ingame\n")
-			CancelEvent()
-			return
-		end
-
-		TriggerEvent("es:setPlayerData", tonumber(args[1]), "permission_level", tonumber(args[2]), function(response, success)
-			RconPrint(response)
-
-			TriggerClientEvent('es:setPlayerDecorator', tonumber(args[1]), 'rank', tonumber(args[2]), true)
-			TriggerClientEvent('chat:addMessage', -1, {
-				args = {"^1CONSOLE", "Permission level of ^2" .. GetPlayerName(tonumber(args[1])) .. "^0 has been set to ^2 " .. args[2]}
-			})
-		end)
-
-		CancelEvent()
-	elseif commandName == 'setgroup' then
-		if #args ~= 2 then
-			RconPrint("Usage: setgroup [user-id] [group]\n")
-			CancelEvent()
-			return
-		end
-
-		if(GetPlayerName(tonumber(args[1])) == nil)then
-			RconPrint("Player not ingame\n")
-			CancelEvent()
-			return
-		end
-
-		TriggerEvent("es:getAllGroups", function(groups)
-
-			if(groups[args[2]])then
-				TriggerEvent("es:setPlayerData", tonumber(args[1]), "group", args[2], function(response, success)
-
-					TriggerClientEvent('es:setPlayerDecorator', tonumber(args[1]), 'group', tonumber(args[2]), true)
+RegisterCommand('setadmin', function(source, args, raw)
+	local player = tonumber(args[1])
+	local level = tonumber(args[2])
+	if args[1] then
+		if (player and GetPlayerName(player)) then
+			if level then
+				TriggerEvent("es:setPlayerData", tonumber(args[1]), "permission_level", tonumber(args[2]), function(response, success)
+					RconPrint(response)
+		
+					TriggerClientEvent('es:setPlayerDecorator', tonumber(args[1]), 'rank', tonumber(args[2]), true)
 					TriggerClientEvent('chat:addMessage', -1, {
-						args = {"^1CONSOLE", "Group of ^2^*" .. GetPlayerName(tonumber(args[1])) .. "^r^0 has been set to ^2^*" .. args[2]}
+						args = {"^1CONSOLE", "Permission level of ^2" .. GetPlayerName(tonumber(args[1])) .. "^0 has been set to ^2 " .. args[2]}
 					})
 				end)
 			else
-				RconPrint("This group does not exist.\n")
+				RconPrint("Invalid level\n")
 			end
-		end)
-
-		CancelEvent()
-	elseif commandName == 'giverole' then
-		if #args < 2 then
-			RconPrint("Usage: giverole [user-id] [role]\n")
-			CancelEvent()
-			return
-		end
-
-		if(GetPlayerName(tonumber(args[1])) == nil)then
+		else
 			RconPrint("Player not ingame\n")
-			CancelEvent()
-			return
 		end
-
-		TriggerEvent("es:getPlayerFromId", tonumber(args[1]), function(user)
-			table.remove(args, 1)
-			user.giveRole(table.concat(args, " "))
-			TriggerClientEvent('chat:addMessage', user.get('source'), {
-				args = {"^1SYSTEM", "You've been given a role: ^2" .. table.concat(args, " ")}
-			})
-		end)
-
-		CancelEvent()
-	elseif commandName == 'removerole' then
-		if #args < 2 then
-			RconPrint("Usage: removerole [user-id] [role]\n")
-			CancelEvent()
-			return
-		end
-
-		if(GetPlayerName(tonumber(args[1])) == nil)then
-			RconPrint("Player not ingame\n")
-			CancelEvent()
-			return
-		end
-
-		TriggerEvent("es:getPlayerFromId", tonumber(args[1]), function(user)
-			table.remove(args, 1)
-			user.removeRole(table.concat(args, " "))
-			TriggerClientEvent('chat:addMessage', user.get('source'), {
-				args = {"^1SYSTEM", "You've been removed a role: ^2" .. table.concat(args, " ")}
-			})
-		end)
-
-		CancelEvent()
-	elseif commandName == 'setmoney' then
-		if #args ~= 2 then
-			RconPrint("Usage: setmoney [user-id] [money]\n")
-			CancelEvent()
-			return
-		end
-
-		if(GetPlayerName(tonumber(args[1])) == nil)then
-			RconPrint("Player not ingame\n")
-			CancelEvent()
-			return
-		end
-
-		TriggerEvent("es:getPlayerFromId", tonumber(args[1]), function(user)
-			if(user)then
-				user.setMoney(tonumber(args[2]))
-
-				RconPrint("Money set")
-				TriggerClientEvent('chat:addMessage', tonumber(args[1]), {
-					args = {"^1SYSTEM", "Your money has been set to: ^2^*$" .. tonumber(args[2])}
-				})
-			end
-		end)
-
-		CancelEvent()
+	else
+		RconPrint("Usage: setadmin [user-id] [permission-level]\n")
 	end
-end)
+end, true)
+
+RegisterCommand('setgroup', function(source, args, raw)
+	local player = tonumber(args[1])
+	local group = args[2]
+	if args[1] then
+		if (player and GetPlayerName(player)) then
+			TriggerEvent("es:getAllGroups", function(groups)
+
+				if(groups[args[2]])then
+					TriggerEvent("es:setPlayerData", player, "group", args[2], function(response, success)
+
+						TriggerClientEvent('es:setPlayerDecorator', player, 'group', tonumber(group), true)
+						TriggerClientEvent('chat:addMessage', -1, {
+							args = {"^1CONSOLE", "Group of ^2^*" .. GetPlayerName(player) .. "^r^0 has been set to ^2^*" .. group}
+						})
+					end)
+				else
+					RconPrint("This group does not exist.\n")
+				end
+			end)
+		else
+			RconPrint("Player not ingame\n")
+		end
+	else
+		RconPrint("Usage: setgroup [user-id] [group]\n")
+	end
+end, true)
+
+RegisterCommand('giverole', function(source, args, raw)
+	local player = tonumber(args[1])
+	local role = table.concat(args, " ", 1)
+	if args[1] then
+		if (player and GetPlayerName(player)) then
+			if args[2] then
+				TriggerEvent("es:getPlayerFromId", player, function(user)
+					user.giveRole(role)
+					TriggerClientEvent('chat:addMessage', user.get('source'), {
+						args = {"^1SYSTEM", "You've been given a role: ^2" .. role}
+					})
+				end)
+			else
+				RconPrint("Usage: giverole [user-id] [role]\n")
+			end
+		else
+			RconPrint("Player not ingame\n")
+		end
+	else
+		RconPrint("Usage: giverole [user-id] [role]\n")
+	end
+end, true)
+
+RegisterCommand('removerole', function(source, args, raw)
+	local player = tonumber(args[1])
+	local role = table.concat(args, " ", 1)
+	if args[1] then
+		if (player and GetPlayerName(player)) then
+			if args[2] then
+				TriggerEvent("es:getPlayerFromId", tonumber(args[1]), function(user)
+					user.removeRole(role)
+					TriggerClientEvent('chat:addMessage', user.get('source'), {
+						args = {"^1SYSTEM", "You've been removed a role: ^2" .. role}
+					})
+				end)
+			else
+				RconPrint("Usage: removerole [user-id] [role]\n")
+			end
+		else
+			RconPrint("Player not ingame\n")
+		end
+	else
+		RconPrint("Usage: removerole [user-id] [role]\n")
+	end
+end, true)
+
+RegisterCommand('setmoney', function(source, args, raw)
+	local player = tonumber(args[1])
+	local money = tonumber(args[2])
+	if args[1] then
+		if (player and GetPlayerName(player)) then
+			if money then
+				TriggerEvent("es:getPlayerFromId", player, function(user)
+					if(user)then
+						user.setMoney(money)
+
+						RconPrint("Money set")
+						TriggerClientEvent('chat:addMessage', player, {
+							args = {"^1SYSTEM", "Your money has been set to: ^2^*$" .. money}
+						})
+					end
+				end)
+			else
+				RconPrint("Invalid amount\n")
+			end
+		else
+			RconPrint("Player not ingame\n")
+		end
+	else
+		RconPrint("Usage: setmoney [user-id] [money]\n")
+	end
+end, true)
 
 -- Default commands
 TriggerEvent('es:addCommand', 'admin', function(source, args, user)
