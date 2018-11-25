@@ -250,7 +250,7 @@ RegisterCommand('setadmin', function(source, args, raw)
 					})
 				end)
 			else
-				RconPrint("Invalid level\n")
+				RconPrint("Invalid integer\n")
 			end
 		else
 			RconPrint("Player not ingame\n")
@@ -350,7 +350,7 @@ RegisterCommand('setmoney', function(source, args, raw)
 					end
 				end)
 			else
-				RconPrint("Invalid amount\n")
+				RconPrint("Invalid integer\n")
 			end
 		else
 			RconPrint("Player not ingame\n")
