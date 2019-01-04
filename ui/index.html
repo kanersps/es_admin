@@ -12,7 +12,7 @@
 			$(document).keyup(function (e) {
 				if (e.keyCode == 27) {
 					$("#admin").fadeOut();
-					$.post('http://es_admin2/close', JSON.stringify({}));
+					$.post('http://es_admin/close', JSON.stringify({}));
 				}
 			});
 
@@ -46,7 +46,7 @@
 
 			$("#close").click(() => {
 				$("#admin").fadeOut();
-				$.post('http://es_admin2/close', JSON.stringify({}));
+				$.post('http://es_admin/close', JSON.stringify({}));
 			});
 
 			$("#select_users").click(() => {
@@ -65,24 +65,24 @@
 				$("#select_server").blur();
 			});
 
-			$("#slay_all").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'slay_all' })); $(this).blur(); });
-			$("#bring_all").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'bring_all' })); $(this).blur(); });
-			$("#slap_all").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'slap_all' })); $(this).blur(); });
+			$("#slay_all").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'slay_all' })); $(this).blur(); });
+			$("#bring_all").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'bring_all' })); $(this).blur(); });
+			$("#slap_all").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'slap_all' })); $(this).blur(); });
 
 
-			$("#slay").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'slay' })); $(this).blur(); });
-			$("#kick").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'kick' })); $(this).blur(); });
-			$("#noclip").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'noclip' })); $(this).blur(); });
-			$("#freeze").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'freeze' })); $(this).blur(); });
-			$("#bring").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'bring' })); $(this).blur(); });
-			$("#goto").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'goto' })); $(this).blur(); });
-			$("#slap").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'slap' })); $(this).blur(); });
-			$("#crash").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'crash' })); $(this).blur(); });
-			$("#ban").click(function () { $.post('http://es_admin2/quick', JSON.stringify({ id: selected, type: 'ban' })); $(this).blur(); });
-			$("#setgroup").click(function () { $.post('http://es_admin2/set', JSON.stringify({ user: selected, type: 'group', param: $("#newgroup").val() })); $(this).blur(); });
-			$("#setlevel").click(function () { $.post('http://es_admin2/set', JSON.stringify({ user: selected, type: 'level', param: $("#newlevel").val() })); $(this).blur(); });
-			$("#setmoney").click(function () { $.post('http://es_admin2/set', JSON.stringify({ user: selected, type: 'money', param: $("#newmoney").val() })); $(this).blur(); });
-			$("#setbank").click(function () { $.post('http://es_admin2/set', JSON.stringify({ user: selected, type: 'bank', param: $("#newbank").val() })); $(this).blur(); });
+			$("#slay").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'slay' })); $(this).blur(); });
+			$("#kick").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'kick' })); $(this).blur(); });
+			$("#noclip").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'noclip' })); $(this).blur(); });
+			$("#freeze").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'freeze' })); $(this).blur(); });
+			$("#bring").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'bring' })); $(this).blur(); });
+			$("#goto").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'goto' })); $(this).blur(); });
+			$("#slap").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'slap' })); $(this).blur(); });
+			$("#crash").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'crash' })); $(this).blur(); });
+			$("#ban").click(function () { $.post('http://es_admin/quick', JSON.stringify({ id: selected, type: 'ban' })); $(this).blur(); });
+			$("#setgroup").click(function () { $.post('http://es_admin/set', JSON.stringify({ user: selected, type: 'group', param: $("#newgroup").val() })); $(this).blur(); });
+			$("#setlevel").click(function () { $.post('http://es_admin/set', JSON.stringify({ user: selected, type: 'level', param: $("#newlevel").val() })); $(this).blur(); });
+			$("#setmoney").click(function () { $.post('http://es_admin/set', JSON.stringify({ user: selected, type: 'money', param: $("#newmoney").val() })); $(this).blur(); });
+			$("#setbank").click(function () { $.post('http://es_admin/set', JSON.stringify({ user: selected, type: 'bank', param: $("#newbank").val() })); $(this).blur(); });
 
 			$('button').click(function () { $(this).blur(); });
 		});
