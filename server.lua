@@ -289,7 +289,7 @@ end, true)
 
 RegisterCommand('giverole', function(source, args, raw)
 	local player = tonumber(args[1])
-	local role = table.concat(args, " ", 1)
+	local role = table.concat(args, " ", 2)
 	if args[1] then
 		if (player and GetPlayerName(player)) then
 			if args[2] then
@@ -312,7 +312,7 @@ end, true)
 
 RegisterCommand('removerole', function(source, args, raw)
 	local player = tonumber(args[1])
-	local role = table.concat(args, " ", 1)
+	local role = table.concat(args, " ", 2)
 	if args[1] then
 		if (player and GetPlayerName(player)) then
 			if args[2] then
