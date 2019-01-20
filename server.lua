@@ -435,7 +435,7 @@ TriggerEvent("es:addGroupCommand", 'ban', "admin", function(source, args, user)
 						elseif string.find(time, "d") then
 							time = math.floor(time:gsub("%d", "") * 60 * 60 * 24)
 						elseif string.find(time, "y") then
-							time = math.floor(time:gsub("%y", "") * 60 * 60 * 365)
+							time = math.floor(time:gsub("%y", "") * 60 * 60 * 24 * 365)
 						end
 
 						TriggerClientEvent('chat:addMessage', -1, {
