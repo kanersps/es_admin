@@ -18,23 +18,17 @@ local banned = ""
 local bannedTable = {}
 
 function loadBans()
-	banned = LoadResourceFile(GetCurrentResourceName(), "data/bans.txt") or ""
-	if banned then
-		local b = stringsplit(banned, "\n")
-		for k,v in ipairs(b) do
-			bannedTable[v] = true
-		end
-	end
-
-	if GetConvar("es_admin2_globalbans", "0") == "1" then
-		PerformHttpRequest("http://essentialmode.com/bans.txt", function(err, rText, headers)
-			local b = stringsplit(rText, "\n")
-			for k,v in pairs(b)do
-				bannedTable[v] = true
-			end
-		end)
+	banned = LoadResourceFile(GetCurrentResourceName(), "bans.json") or ""
+	if banned ~= "" then
+		bannedTable = json.decode(banned)
+	else
+		bannedTable = {}
 	end
 end
+
+RegisterCommand("refresh_bans", function()
+	loadBans()
+end, true)
 
 function loadExistingPlayers()
 	TriggerEvent("es:getPlayers", function(curPlayers)
@@ -46,20 +40,49 @@ end
 
 loadExistingPlayers()
 
-function isBanned(id)
-	return bannedTable[id]
+function removeBan(id)
+	bannedTable[id] = nil
+	SaveResourceFile(GetCurrentResourceName(), "bans.json", json.encode(bannedTable), -1)
 end
 
-function banUser(id)
-	banned = banned .. id .. "\n"
-	SaveResourceFile(GetCurrentResourceName(), "data/bans.txt", banned, -1)
-	bannedTable[id] = true
+function isBanned(id)
+	if bannedTable[id] ~= nil then
+		if bannedTable[id].expire < os.time() then
+			removeBan(id)
+			return false
+		else
+			return bannedTable[id]
+		end
+	else
+		return false
+	end
+end
+
+function permBanUser(bannedBy, id)
+	bannedTable[id] = {
+		banner = bannedBy,
+		reason = "Permanently banned from this server",
+		expire = 0
+	}
+
+	SaveResourceFile(GetCurrentResourceName(), "bans.json", json.encode(bannedTable), -1)
+end
+
+function banUser(expireSeconds, bannedBy, id, re)
+	bannedTable[id] = {
+		banner = bannedBy,
+		reason = re,
+		expire = (os.time() + expireSeconds)
+	}
+
+	SaveResourceFile(GetCurrentResourceName(), "bans.json", json.encode(bannedTable), -1)
 end
 
 AddEventHandler('playerConnecting', function(user, set)
 	for k,v in ipairs(GetPlayerIdentifiers(source))do
-		if isBanned(v) then
-			set(GetConvar("es_admin_banreason", "You're banned from this server"))
+		local banData = isBanned(v)
+		if banData ~= false then
+			set("Banned for: " .. banData.reason .. "\nExpires: " .. (os.date("%c", banData.expire)))
 			CancelEvent()
 			break
 		end
@@ -113,9 +136,16 @@ AddEventHandler('es_admin:quick', function(id, type)
 						if type == "kick" then DropPlayer(id, 'Kicked by es_admin GUI') end
 
 						if type == "ban" then
-							for k,v in ipairs(GetPlayerIdentifiers(id))do
-								banUser(v)
+							local id
+							local ip
+							for k,v in ipairs(GetPlayerIdentifiers(source))do
+								if string.sub(v, 1, string.len("steam:")) == "steam:" then
+									permBanUser(user.identifier, v)
+								elseif string.sub(v, 1, string.len("ip:")) == "ip:" then
+									permBanUser(user.identifier, v)
+								end
 							end
+
 							DropPlayer(id, GetConvar("es_admin_banreason", "You were banned from this server"))
 						end
 					else
@@ -374,6 +404,57 @@ TriggerEvent('es:addCommand', 'admin', function(source, args, user)
 		args = {"^1SYSTEM", "Group: ^*^2 " .. user.getGroup()}
 	})
 end, {help = "Shows what admin level you are and what group you're in"})
+
+-- Ban a person
+TriggerEvent("es:addGroupCommand", 'ban', "admin", function(source, args, user)
+	local Source = source
+	if args[1] then
+		if(tonumber(args[1]) and GetPlayerName(tonumber(args[1])))then
+			local player = tonumber(args[1])
+
+			-- User permission check
+			TriggerEvent("es:getPlayerFromId", player, function(target)
+				TriggerEvent('es:canGroupTarget', user.getGroup(), target.getGroup(), function(canTarget)
+					if canTarget then
+						local reason = args
+						table.remove(reason, 1)
+						local time = args[1]
+						table.remove(reason, 1)
+						if(#reason == 0)then
+							reason = "You have been banned from the server"
+						else
+							reason = "" .. table.concat(reason, " ")
+						end
+
+						-- Awful shit logic but eh, it works?
+						-- Days
+						if string.find(time, "m")then
+							time = math.floor(time:gsub("%m", "") * 60)
+						elseif string.find(time, "h") then
+							time = math.floor(time:gsub("%h", "") * 60 * 60)
+						elseif string.find(time, "d") then
+							time = math.floor(time:gsub("%d", "") * 60 * 60 * 24)
+						elseif string.find(time, "y") then
+							time = math.floor(time:gsub("%y", "") * 60 * 60 * 365)
+						end
+
+						TriggerClientEvent('chat:addMessage', -1, {
+							args = {"^1SYSTEM", "Player ^2" .. GetPlayerName(player) .. "^0 has been kicked(^2" .. reason .. "^0)"}
+						})
+						banUser(time, user.getIdentifier(), target.getIdentifier(), reason)
+						DropPlayer(player, "Banned for: " .. reason .. "\nExpires: " .. (os.date("%c", os.time() + time)))
+					else
+						TriggerClientEvent('chat:addMessage', source, { args = {"^1SYSTEM", "You can not target this person"}})
+					end
+				end)
+			end)
+		else
+			TriggerClientEvent('chat:addMessage', source, { args = {"^1SYSTEM", "Incorrect player ID"}})
+		end
+	else
+		TriggerClientEvent('chat:addMessage', source, { args = {"^1SYSTEM", "Incorrect player ID"}})
+	end
+end)
 
 -- Report to admins
 TriggerEvent('es:addCommand', 'report', function(source, args, user)
