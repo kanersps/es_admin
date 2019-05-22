@@ -428,7 +428,9 @@ TriggerEvent("es:addGroupCommand", 'ban', "admin", function(source, args, user)
 
 						-- Awful shit logic but eh, it works?
 						-- Days
-						if string.find(time, "m")then
+						if string.find(time, "s") then
+							time = math.floor(time:gsub("%s", ""))
+						elseif string.find(time, "m") then
 							time = math.floor(time:gsub("%m", "") * 60)
 						elseif string.find(time, "h") then
 							time = math.floor(time:gsub("%h", "") * 60 * 60)
