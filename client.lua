@@ -236,11 +236,9 @@ AddEventHandler("es_admin:noclip", function(t)
 end)
 
 function getPlayers()
-	local players = {}
-	for i = 0,32 do
-		if NetworkIsPlayerActive(i) then
-			table.insert(players, {id = GetPlayerServerId(i), name = GetPlayerName(i)})
-		end
-	end
-	return players
+    local players = {}
+    for _, player in ipairs(GetActivePlayers()) do
+        table.insert(players, {id = GetPlayerServerId(player), name = GetPlayerName(player)})
+    end
+    return players
 end
