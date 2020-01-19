@@ -8,7 +8,7 @@ Citizen.CreateThread(function()
 		Citizen.Wait(0)
 		
 		if (IsControlJustPressed(1, 212) and IsControlJustPressed(1, 213)) then
-			if true then
+			if group ~= "user" then
 				SetNuiFocus(true, true)
 				SendNUIMessage({type = 'open', players = getPlayers()})
 			end
