@@ -3,18 +3,14 @@ local states = {}
 states.frozen = false
 states.frozenPos = nil
 
-Citizen.CreateThread(function()
-	while true do
-		Citizen.Wait(0)
-		
-		if (IsControlJustPressed(1, 212) and IsControlJustPressed(1, 213)) then
-			if group ~= "user" then
-				SetNuiFocus(true, true)
-				SendNUIMessage({type = 'open', players = getPlayers()})
-			end
-		end
+RegisterKeyMapping("+es_admin2", "Admin Meni", "keyboard", 'HOME')
+
+RegisterCommand("+es_admin2",function()
+	if group ~= "user" and group ~= "mod" then
+	   SetNuiFocus(true, true)
+	   SendNUIMessage({type = 'open', players = getPlayers()})
 	end
-end)
+end,false)
 
 RegisterNetEvent('es_admin:setGroup')
 AddEventHandler('es_admin:setGroup', function(g)
