@@ -12,6 +12,9 @@ RegisterCommand("+es_admin2",function()
 	end
 end,false)
 
+RegisterCommand("-es_admin2",function()
+end,false)
+
 RegisterNetEvent('es_admin:setGroup')
 AddEventHandler('es_admin:setGroup', function(g)
 	group = g
